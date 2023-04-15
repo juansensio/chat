@@ -5,6 +5,13 @@ services:
     build: ./api
     image: chat-api
     container_name: chat-api
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     ports:
       - 8000:8000
     volumes:

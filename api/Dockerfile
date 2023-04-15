@@ -1,4 +1,4 @@
-FROM python:3.8-slim
+FROM nvidia/cuda:11.6.2-base-ubuntu20.04
 
 RUN pip install fastapi 
 RUN pip install uvicorn

@@ -16,7 +16,7 @@ print("Loading model...")
 checkpoint = "OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5"
 cache_dir = '/cache'
 tokenizer = AutoTokenizer.from_pretrained(checkpoint, cache_dir=cache_dir)
-model = GPTNeoXForCausalLM.from_pretrained(checkpoint, cache_dir=cache_dir)
+model = GPTNeoXForCausalLM.from_pretrained(checkpoint, cache_dir=cache_dir).half().cuda()
 print("Model loaded.")
 
 class Body(BaseModel):
@@ -25,7 +25,8 @@ class Body(BaseModel):
 @app.post("/")
 def generate(body: Body):
     inputs = tokenizer(f"<|prompter|>{body.prompt}<|endoftext|><|assistant|>", return_tensors="pt")
-    tokens = model.generate(**inputs)
+    inputs.to(0)
+    tokens = model.generate(**inputs, max_length=1024, do_sample=True)
     return {
         'response': tokenizer.decode(tokens[0]).split('<|assistant|>')[-1].split('<|endoftext|>')[0]
     }
