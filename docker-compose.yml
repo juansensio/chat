@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  api:
+    build: ./api
+    image: chat-api
+    container_name: chat-api
+    ports:
+      - 8000:8000
+    volumes:
+      - ./api:/api
+    command: uvicorn api.main:app --host 0.0.0.0 --reload
