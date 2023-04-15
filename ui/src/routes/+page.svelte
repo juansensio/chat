@@ -6,8 +6,16 @@
   const generate = () => {
     if (!prompt || prompt.length == 0) return;
     prompts = [...prompts, prompt];
-    responses = [...responses, "Loading..."];
     loading = true;
+    responses = [...responses, "Loading..."];
+    prompt = prompts
+      .map((p, i) => {
+        if (i < prompts.length - 1)
+          return p + "<|assistant|>" + responses[i] + "<|prompter|>";
+        return p;
+      })
+      .join(" ");
+    // console.log(prompt);
     fetch("http://localhost:8000/", {
       method: "POST",
       headers: {
@@ -39,7 +47,7 @@
       {/each}
     </div>
   </div>
-  <form on:submit|preventDefault={generate} class="flex flex-row gap-3">
+  <form on:submit|preventDefault={generate} class="flex flex-row gap-3 mt-3">
     <input
       type="text"
       class="border border-2-gray p-2 w-full"
