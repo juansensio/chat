@@ -26,7 +26,7 @@ class Body(BaseModel):
 def generate(body: Body):
     inputs = tokenizer(f"<|prompter|>{body.prompt}<|endoftext|><|assistant|>", return_tensors="pt")
     inputs.to(0)
-    tokens = model.generate(**inputs, max_length=1024, do_sample=True)
+    tokens = model.generate(**inputs, max_length=512, do_sample=True)
     return {
         'response': tokenizer.decode(tokens[0]).split('<|assistant|>')[-1].split('<|endoftext|>')[0]
     }
