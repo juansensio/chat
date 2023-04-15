@@ -5,8 +5,9 @@ from transformers import AutoTokenizer, GPTNeoXForCausalLM
 app = FastAPI()
 
 checkpoint = "OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5"
-tokenizer = AutoTokenizer.from_pretrained(checkpoint)
-model = GPTNeoXForCausalLM.from_pretrained(checkpoint)
+cache_dir = '/cache'
+tokenizer = AutoTokenizer.from_pretrained(checkpoint, cache_dir=cache_dir)
+model = GPTNeoXForCausalLM.from_pretrained(checkpoint, cache_dir=cache_dir)
 
 
 class Body(BaseModel):

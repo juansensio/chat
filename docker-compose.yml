@@ -9,4 +9,15 @@ services:
       - 8000:8000
     volumes:
       - ./api:/api
+      - ./cache:/cache
     command: uvicorn api.main:app --host 0.0.0.0 --reload
+  ui:
+    build: ./ui
+    image: chat-ui
+    container_name: chat-ui
+    ports:
+      - 5173:5173
+    volumes:
+      - ./ui:/usr/src/app
+      - /usr/src/app/node_modules
+    command: yarn dev --host 0.0.0.0
