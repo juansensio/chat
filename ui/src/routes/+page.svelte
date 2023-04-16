@@ -13,7 +13,12 @@
     const request_prompt = prompts
       .map((p, i) => {
         if (i < prompts.length - 1)
-          return p + "<|assistant|>" + responses[i] + "<|prompter|>";
+          return (
+            p +
+            "<|endoftext|><|assistant|>" +
+            responses[i] +
+            "<|endoftext|><|prompter|>"
+          );
         return p;
       })
       .join(" ");
