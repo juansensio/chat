@@ -6,10 +6,15 @@ This is a clone of ChatGPT using [Open Assistant](https://huggingface.co/OpenAss
 
 - Docker
 - Docker Compose
+
+To run the model on GPU, you will also need:
+
 - Nvidia Docker
 - Nvidia GPU with at least 24GB of memory
 
 ## Instructions
+
+Create a `.env` file in [ui](./ui) with the API URL (by default you can use `http://localhost:8000` by renaming `.env.example` to `.env`).
 
 Build the docker images
 
@@ -28,3 +33,5 @@ The API will be available at [http://localhost:8000](http://localhost:8000), wit
 The UI will be available at [http://localhost:5173](http://localhost:5173).
 
 ![pic](pic.png)
+
+You can modify the number og GPUs available in the `docker-compose.yml` file.

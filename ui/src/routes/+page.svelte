@@ -1,4 +1,5 @@
 <script>
+  import { PUBLIC_API_URL } from "$env/static/public";
   let prompt = "";
   let prompts = [];
   let responses = [];
@@ -22,7 +23,7 @@
         return p;
       })
       .join(" ");
-    const res = await fetch("http://localhost:8000/", {
+    const res = await fetch(PUBLIC_API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

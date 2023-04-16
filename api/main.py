@@ -27,7 +27,7 @@ def generator(body, max_steps = 2048*2):
     for _ in range(max_steps):
         inputs = tokenizer(input, return_tensors="pt")
         inputs.to(0)
-        tokens = model.generate(**inputs, max_new_tokens=max_new_tokens, do_sample=True, temperature=0.9)
+        tokens = model.generate(**inputs, max_new_tokens=max_new_tokens, do_sample=True, temperature=0.9, top_k=50, top_p=0.9, repetition_penalty=1.2)
         input = tokenizer.decode(tokens[0])
         response = input.split('<|assistant|>')[-1].split('<|endoftext|>')[0]
         if input.endswith('<|endoftext|>'): return response
