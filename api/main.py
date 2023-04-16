@@ -20,7 +20,6 @@ tokenizer = AutoTokenizer.from_pretrained(checkpoint, cache_dir=cache_dir)
 model = GPTNeoXForCausalLM.from_pretrained(checkpoint, cache_dir=cache_dir, device_map="auto").half()
 print("Model loaded.")
 
-# generate output tokens one by one and return in steraming response
 def generator(body, max_steps = 2048*2):
     input = f"<|prompter|>{body.prompt}<|endoftext|><|assistant|>"
     max_new_tokens = 4
