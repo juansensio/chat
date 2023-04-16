@@ -22,7 +22,7 @@ print("Model loaded.")
 
 def generator(body, max_steps = 2048*2):
     input = f"<|prompter|>{body.prompt}<|endoftext|><|assistant|>"
-    max_new_tokens = 4
+    max_new_tokens = 3
     for _ in range(max_steps):
         inputs = tokenizer(input, return_tensors="pt")
         inputs.to(0)
