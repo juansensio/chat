@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from starlette.responses import StreamingResponse
 from pydantic import BaseModel
 from transformers import AutoTokenizer, GPTNeoXForCausalLM
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,20 +14,31 @@ app.add_middleware(
 )
 
 print("Loading model...")
-checkpoint = "OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5"
+checkpoint = "OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5" 
 cache_dir = '/cache'
 tokenizer = AutoTokenizer.from_pretrained(checkpoint, cache_dir=cache_dir)
-model = GPTNeoXForCausalLM.from_pretrained(checkpoint, cache_dir=cache_dir).half().cuda()
+model = GPTNeoXForCausalLM.from_pretrained(checkpoint, cache_dir=cache_dir, device_map="auto").half()
 print("Model loaded.")
+
+# generate output tokens one by one and return in steraming response
+def generator(body, max_steps = 2048):
+    input = f"<|prompter|>{body.prompt}<|endoftext|><|assistant|>"
+    for step in range(max_steps):
+        inputs = tokenizer(input, return_tensors="pt")
+        inputs.to(0)
+        tokens = model.generate(**inputs, max_new_tokens=1, do_sample=True)
+        input = tokenizer.decode(tokens[0])
+        response = input.split('<|assistant|>')[-1].split('<|endoftext|>')[0]
+        if input.endswith('<|endoftext|>'): return response
+        yield response
 
 class Body(BaseModel):
     prompt: str
 
 @app.post("/")
-def generate(body: Body):
-    inputs = tokenizer(f"<|prompter|>{body.prompt}<|endoftext|><|assistant|>", return_tensors="pt")
-    inputs.to(0)
-    tokens = model.generate(**inputs, max_length=512, do_sample=True)
-    return {
-        'response': tokenizer.decode(tokens[0]).split('<|assistant|>')[-1].split('<|endoftext|>')[0]
-    }
+async def generate(body: Body):
+    return StreamingResponse(
+            content=generator(body),
+            media_type="text/plain"
+        )
+    
