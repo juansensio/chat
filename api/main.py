@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 from starlette.responses import StreamingResponse
 from pydantic import BaseModel
-from transformers import AutoTokenizer, GPTNeoXForCausalLM
+from transformers import AutoTokenizer, AutoModelForCausalLM, GPTNeoXForCausalLM
 from fastapi.middleware.cors import CORSMiddleware
+import torch
 
 app = FastAPI()
 app.add_middleware(
@@ -14,10 +15,17 @@ app.add_middleware(
 )
 
 print("Loading model...")
+
 checkpoint = "OpenAssistant/oasst-sft-4-pythia-12b-epoch-3.5" 
+# checkpoint = "tiiuae/falcon-7b-instruct" 
+
 cache_dir = '/cache'
+
 tokenizer = AutoTokenizer.from_pretrained(checkpoint, cache_dir=cache_dir)
+
 model = GPTNeoXForCausalLM.from_pretrained(checkpoint, cache_dir=cache_dir, device_map="auto").half()
+# model = AutoModelForCausalLM.from_pretrained(checkpoint, cache_dir=cache_dir, device_map="auto", torch_dtype=torch.bfloat16, trust_remote_code=True)
+
 print("Model loaded.")
 
 def generator(body, max_steps = 2048*2):
@@ -26,6 +34,7 @@ def generator(body, max_steps = 2048*2):
     for _ in range(max_steps):
         inputs = tokenizer(input, return_tensors="pt")
         inputs.to(0)
+        # this does not work with falcon
         tokens = model.generate(**inputs, max_new_tokens=max_new_tokens, do_sample=True, temperature=0.9, top_k=50, top_p=0.9, repetition_penalty=1.2)
         input = tokenizer.decode(tokens[0])
         response = input.split('<|assistant|>')[-1].split('<|endoftext|>')[0]

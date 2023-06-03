@@ -10,7 +10,7 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              count: 4 
+              count: 2
               capabilities: [gpu]
     ports:
       - 8000:8000
